@@ -1,0 +1,19 @@
+# Private local diagnostics / crash artifacts
+artifacts/
+diagnostics/
+local/
+*.core
+*.core.*
+core
+core.*
+*.dmp
+*.zst
+*.log
+*crash-report*.txt
+*gdb*.txt
+# Common local state
+.env
+.env.*
+*.swp
+.DS_Store
+__pycache__/
