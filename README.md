@@ -21,7 +21,7 @@ A reproducible investigation workspace for a Snap Store `SIGSEGV` observed on Ub
 
 The kernel fault site is not proof that the driver contains the original defect: upstream callers, toolkit integration, memory corruption, or hardware can also be involved.
 
-See [case details](docs/CASE-2271.md), [test plan](docs/TEST-PLAN.md), and [results template](docs/RESULTS-TEMPLATE.md).
+See [case details](docs/CASE-2271.md), [test plan](docs/TEST-PLAN.md), [results template](docs/RESULTS-TEMPLATE.md), and the [2026-10-28 baseline launch log assessment](docs/T2-LAUNCH-2026-10-28.md).
 
 ## Quick start
 
@@ -45,7 +45,11 @@ The opt-in analysis writes files under `artifacts/` (ignored by Git). It uses a 
 
 If an opt-in GDB run succeeds, inspect and redact `artifacts/snap-store-40117-gdb.txt` before sharing. No GDB report from the hanging run has been verified. See the [test plan](docs/TEST-PLAN.md).
 
-## Planned experiments (not yet performed)
+## Subsequent baseline launch (2026-10-28)
+
+A normal `snap run snap-store` produced repeated ratings-service gRPC connection refusals and Riverpod `UnmountedRefException` messages. These resemble the independent upstream [ratings-service report #2121](https://github.com/ubuntu/app-center/issues/2121). **No SIGSEGV or new core dump was established by the supplied console output**, so the original NVIDIA EGL crash has not been reproduced by this evidence. See [T2 analysis](docs/T2-LAUNCH-2026-10-28.md).
+
+## Planned experiments (remaining or incomplete)
 
 1. **Core forensics:** metadata first; only if safe, opt-in shallow backtrace, registers, and faulting instruction. Defer all-thread/full-variable traces to a separate analysis environment.
 2. **Reproduction:** record the exact UI action and frequency, or establish that no deterministic procedure exists.
@@ -75,6 +79,7 @@ Record new findings in [ubuntu/app-center#2271](https://github.com/ubuntu/app-ce
 ├── .gitignore
 ├── docs/
 │   ├── CASE-2271.md
+│   ├── T2-LAUNCH-2026-10-28.md
 │   ├── TEST-PLAN.md
 │   └── RESULTS-TEMPLATE.md
 └── scripts/
