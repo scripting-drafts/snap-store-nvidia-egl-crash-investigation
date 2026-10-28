@@ -35,9 +35,11 @@ If the opt-in GDB stage completes, inspect the private report for:
 
 **Caution:** NVIDIA user-space libraries are proprietary and may have limited public symbols. A mostly unsymbolicated NVIDIA backtrace is possible. Do not claim the stack is diagnostic if frames are missing/unreliable.
 
-## T2 — Capture a baseline reproduction (pending)
+## T2 — Capture a baseline reproduction (initial launch recorded; crash not confirmed)
 
-From an X11 desktop terminal:
+An initial `snap run snap-store` launch on 2026-10-28 produced many ratings API failures and Flutter/Riverpod errors, but the supplied console log did not show `SIGSEGV` or prove a crash. See [the initial T2 observation](T2-LAUNCH-2026-10-28.md). The ratings API failure also appears in [existing upstream issue #2121](https://github.com/ubuntu/app-center/issues/2121); do not conflate that with the NVIDIA EGL crash in #2271.
+
+For any future controlled attempt from an X11 desktop terminal:
 
 ```bash
 snap run snap-store
