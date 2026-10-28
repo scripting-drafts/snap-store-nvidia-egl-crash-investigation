@@ -14,16 +14,22 @@ Expected existing evidence: `snap-store`, signal 11, 2026-10-27 16:04:13 CET, `S
 
 ## T1 — Extract and inspect the core (pending)
 
-```bash
-sudo apt install gdb
+\`\`\`bash
+# Safe default: metadata ONLY; does not export the core or start GDB.
 ./scripts/analyze-core.sh 40117
-```
 
-Inspect the generated private report for:
+# Optional, only when system health is good and explicit resource limits work:
+# ./scripts/analyze-core.sh 40117 --extract
+# ./scripts/analyze-core.sh 40117 --gdb
+\`\`\`
 
-- Which thread took `SIGSEGV` and its complete call chain (`thread apply all bt full`).
+**Incident update (2026-10-28):** Running `sudo apt install gdb` followed by the previous `./scripts/analyze-core.sh 40117` reportedly hung the host. It has not been determined whether package installation, core extraction, or GDB caused the hang. Record this as a separate observed outcome, not a confirmed defect in GDB. The new script defaults to metadata only, uses time/resource-limited user scopes for opt-in stages, disables GDB auto-loading and debuginfod, and takes a shallow fault-thread trace. Do not automatically increase limits or rerun the previous workflow. A separate disposable VM with a copy of the core is preferable for intensive analysis.
+
+If the opt-in GDB stage completes, inspect the private report for:
+
+- A shallow backtrace of the faulting thread; do not request all-thread full-variable backtraces on this host.
 - `$pc`, `$sp`, fault-related registers and disassembly around the faulting instruction.
-- Which shared objects are present and whether symbol resolution works.
+- Whether the limited trace contains symbol names; defer complete shared-object inventory to offline analysis.
 - Whether the effective memory address can be calculated from the faulting instruction and registers.
 - Consistency with the original `0x1278` fault address; do **not** infer the pointer base from the address alone.
 
