@@ -14,14 +14,14 @@ Expected existing evidence: `snap-store`, signal 11, 2026-10-27 16:04:13 CET, `S
 
 ## T1 — Extract and inspect the core (pending)
 
-\`\`\`bash
+```bash
 # Safe default: metadata ONLY; does not export the core or start GDB.
 ./scripts/analyze-core.sh 40117
 
 # Optional, only when system health is good and explicit resource limits work:
 # ./scripts/analyze-core.sh 40117 --extract
 # ./scripts/analyze-core.sh 40117 --gdb
-\`\`\`
+```
 
 **Incident update (2026-10-28):** Running `sudo apt install gdb` followed by the previous `./scripts/analyze-core.sh 40117` reportedly hung the host. It has not been determined whether package installation, core extraction, or GDB caused the hang. Record this as a separate observed outcome, not a confirmed defect in GDB. The new script defaults to metadata only, uses time/resource-limited user scopes for opt-in stages, disables GDB auto-loading and debuginfod, and takes a shallow fault-thread trace. Do not automatically increase limits or rerun the previous workflow. A separate disposable VM with a copy of the core is preferable for intensive analysis.
 
