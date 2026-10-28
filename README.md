@@ -39,11 +39,11 @@ Run these commands **on the affected Ubuntu system** (not on another computer). 
 # ./scripts/analyze-core.sh 40117 --gdb
 ```
 
-**Safety update (2026-10-28):** The previous `./scripts/analyze-core.sh 40117` workflow reportedly caused system unresponsiveness. Do not rerun the old script. The updated default only reads `coredumpctl info` with a 15-second timeout and does not start GDB or extract a core. `--extract` and `--gdb` are opt-in, require memory/CPU/time/file-size caps in a systemd user scope, and refuse to fall back to unbounded execution when resource controls are unavailable. The core can expand far beyond the 19.3 MB compressed file. These controls reduce risk, **not guarantee** responsiveness. If the machine becomes unresponsive again, stop immediately rather than increasing limits.
+**Safety update (2026-10-28, user-confirmed):** Running the **previous** `./scripts/analyze-core.sh 40117` caused the system to become unresponsive. The preceding `sudo apt install gdb` did **not** cause the hang. The exact point inside the script (core export versus GDB startup/analysis) remains undetermined. Do not rerun the old script. The updated default only reads `coredumpctl info` with a 15-second timeout and does not start GDB or extract a core. `--extract` and `--gdb` are opt-in, require memory/CPU/time/file-size caps in a systemd user scope, and refuse to fall back to unbounded execution when resource controls are unavailable. The core can expand far beyond the 19.3 MB compressed file. These controls reduce risk, **not guarantee** responsiveness. If the machine becomes unresponsive again, stop immediately rather than increasing limits.
 
 The opt-in analysis writes files under `artifacts/` (ignored by Git). It uses a shallow fault-thread backtrace, not `thread apply all bt full`. Collect basic evidence first and use a separate noncritical host for deeper debugging if necessary.
 
-Read **the entire** `artifacts/snap-store-40117-gdb.txt` and the [test plan](docs/TEST-PLAN.md). If GDB has no NVIDIA function symbols, a backtrace may show only addresses; this is still useful evidence but limits conclusions.
+If an opt-in GDB run succeeds, inspect and redact `artifacts/snap-store-40117-gdb.txt` before sharing. No GDB report from the hanging run has been verified. See the [test plan](docs/TEST-PLAN.md).
 
 ## Planned experiments (not yet performed)
 
