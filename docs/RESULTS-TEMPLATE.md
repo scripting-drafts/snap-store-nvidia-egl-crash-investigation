@@ -5,7 +5,7 @@ Upstream: https://github.com/ubuntu/app-center/issues/2271
 | ID | Date/time (timezone) | Procedure | CPU affinity | Renderer **verified?** | Runs | Crashes | New dump/PID | Observations |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | T0 | 2026-10-28 (earlier capture) | `coredumpctl info 40117` | N/A | N/A | N/A | 1 historical | 40117 | Core metadata reported present, 19.3 MB |
-| T1 | Pending | GDB extraction | N/A | N/A | — | — | — | — |
+| T1 | 2026-10-28 (time not recorded) | Original `./scripts/analyze-core.sh 40117` (core export + unrestricted GDB) | N/A | N/A | 1 | N/A | No new dump confirmed | **System hung while script executed**; GDB installation did not hang; exact internal stage unknown. Limited retry not yet performed. |
 | T2 | Pending | Baseline GUI | Default | Not verified | — | — | — | — |
 | T3 | Pending | Affinity A/B | Exclude 2,8 after topology check | Not verified | — | — | — | — |
 | T4 | Pending | Renderer isolation | Default | Not verified | — | — | — | — |
