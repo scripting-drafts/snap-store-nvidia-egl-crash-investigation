@@ -27,7 +27,7 @@ See [case details](docs/CASE-2271.md), [test plan](docs/TEST-PLAN.md), and [resu
 
 Run these commands **on the affected Ubuntu system** (not on another computer). Required tools: `systemd-coredump` utilities (`coredumpctl`), `gdb`, and standard Linux utilities.
 
-\`\`\`bash
+```bash
 # Metadata-only, no GDB or decompression (recommended after a hang).
 ./scripts/analyze-core.sh 40117
 
@@ -37,7 +37,7 @@ Run these commands **on the affected Ubuntu system** (not on another computer). 
 # ONLY if the host is responsive and you accept resource-limited processing:
 # ./scripts/analyze-core.sh 40117 --extract
 # ./scripts/analyze-core.sh 40117 --gdb
-\`\`\`
+```
 
 **Safety update (2026-10-28):** The previous `./scripts/analyze-core.sh 40117` workflow reportedly caused system unresponsiveness. Do not rerun the old script. The updated default only reads `coredumpctl info` with a 15-second timeout and does not start GDB or extract a core. `--extract` and `--gdb` are opt-in, require memory/CPU/time/file-size caps in a systemd user scope, and refuse to fall back to unbounded execution when resource controls are unavailable. The core can expand far beyond the 19.3 MB compressed file. These controls reduce risk, **not guarantee** responsiveness. If the machine becomes unresponsive again, stop immediately rather than increasing limits.
 
