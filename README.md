@@ -27,24 +27,27 @@ See [case details](docs/CASE-2271.md), [test plan](docs/TEST-PLAN.md), and [resu
 
 Run these commands **on the affected Ubuntu system** (not on another computer). Required tools: `systemd-coredump` utilities (`coredumpctl`), `gdb`, and standard Linux utilities.
 
-```bash
-sudo apt update
-sudo apt install gdb
+\`\`\`bash
+# Metadata-only, no GDB or decompression (recommended after a hang).
+./scripts/analyze-core.sh 40117
 
-# 1. Capture current metadata and crash details in a private local directory.
+# Optional: collect system metadata; may invoke nvidia-smi and journal queries.
 ./scripts/collect-evidence.sh
 
-# 2. Extract the existing core and create a GDB report.
-./scripts/analyze-core.sh 40117
-```
+# ONLY if the host is responsive and you accept resource-limited processing:
+# ./scripts/analyze-core.sh 40117 --extract
+# ./scripts/analyze-core.sh 40117 --gdb
+\`\`\`
 
-The analysis script searches `coredumpctl` for the specified PID, uses the executable reported for the saved crash, and writes both the core and GDB output to `./artifacts/` (ignored by Git). A missing or inaccessible core produces an error rather than a fabricated report.
+**Safety update (2026-10-28):** The previous `./scripts/analyze-core.sh 40117` workflow reportedly caused system unresponsiveness. Do not rerun the old script. The updated default only reads `coredumpctl info` with a 15-second timeout and does not start GDB or extract a core. `--extract` and `--gdb` are opt-in, require memory/CPU/time/file-size caps in a systemd user scope, and refuse to fall back to unbounded execution when resource controls are unavailable. The core can expand far beyond the 19.3 MB compressed file. These controls reduce risk, **not guarantee** responsiveness. If the machine becomes unresponsive again, stop immediately rather than increasing limits.
+
+The opt-in analysis writes files under `artifacts/` (ignored by Git). It uses a shallow fault-thread backtrace, not `thread apply all bt full`. Collect basic evidence first and use a separate noncritical host for deeper debugging if necessary.
 
 Read **the entire** `artifacts/snap-store-40117-gdb.txt` and the [test plan](docs/TEST-PLAN.md). If GDB has no NVIDIA function symbols, a backtrace may show only addresses; this is still useful evidence but limits conclusions.
 
 ## Planned experiments (not yet performed)
 
-1. **Core forensics:** faulting thread, registers, mapped libraries, disassembly, and full backtrace; check whether a null-derived dereference can be demonstrated.
+1. **Core forensics:** metadata first; only if safe, opt-in shallow backtrace, registers, and faulting instruction. Defer all-thread/full-variable traces to a separate analysis environment.
 2. **Reproduction:** record the exact UI action and frequency, or establish that no deterministic procedure exists.
 3. **CPU-affinity A/B:** compare normal launch with a launch excluding the *previously suspected* logical CPUs 2 and 8, after rechecking topology. This is **correlation**, not a hardware diagnosis.
 4. **Graphics isolation:** compare the normal NVIDIA EGL path with a *verified* alternative rendering path; setting `LIBGL_ALWAYS_SOFTWARE=1` is only an exploratory attempt and may **not** change the backend for a snap.
