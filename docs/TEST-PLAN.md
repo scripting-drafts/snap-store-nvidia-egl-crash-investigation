@@ -12,7 +12,7 @@ coredumpctl info 40117 --no-pager
 
 Expected existing evidence: `snap-store`, signal 11, 2026-10-27 16:04:13 CET, `Storage: ... (present)`, compressed size 19.3 MB. Storage could be purged later; recheck before extraction.
 
-## T1 — Extract and inspect the core (pending)
+## T1 — Extract and inspect the core (previous attempt hung; limited retry pending)
 
 ```bash
 # Safe default: metadata ONLY; does not export the core or start GDB.
@@ -23,7 +23,7 @@ Expected existing evidence: `snap-store`, signal 11, 2026-10-27 16:04:13 CET, `S
 # ./scripts/analyze-core.sh 40117 --gdb
 ```
 
-**Incident update (2026-10-28):** Running `sudo apt install gdb` followed by the previous `./scripts/analyze-core.sh 40117` reportedly hung the host. It has not been determined whether package installation, core extraction, or GDB caused the hang. Record this as a separate observed outcome, not a confirmed defect in GDB. The new script defaults to metadata only, uses time/resource-limited user scopes for opt-in stages, disables GDB auto-loading and debuginfod, and takes a shallow fault-thread trace. Do not automatically increase limits or rerun the previous workflow. A separate disposable VM with a copy of the core is preferable for intensive analysis.
+**Incident update (2026-10-28, user-confirmed):** `sudo apt install gdb` completed without causing the hang. The host became unresponsive **while the previous `./scripts/analyze-core.sh 40117` was executing**. The old script ran `coredumpctl dump` followed by unrestricted GDB (including `thread apply all bt full`); we do **not** know which internal stage caused the hang. This is a confirmed host-unresponsiveness observation during analysis, **not** proof that GDB, the core file, the NVIDIA driver, or a CPU was defective. The replacement script defaults to metadata only, uses time/resource-limited user scopes for opt-in stages, disables GDB auto-loading and debuginfod, and takes a shallow fault-thread trace. Do not automatically increase limits or rerun the previous workflow. A separate disposable VM with a copy of the core is preferable for intensive analysis.
 
 If the opt-in GDB stage completes, inspect the private report for:
 
